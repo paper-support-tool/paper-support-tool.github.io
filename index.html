@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link href="./style.css" rel="stylesheet" type="text/css">
+    <title>Paper Support Tool</title>
+</head>
+<body>
+    <section>
+        <h2 class="title">Paper Support Tool</h2>
+        <table>
+            <tr>
+                <td class="topItem"><h3 class="subtext" id="leftLang">英語</h3></td>
+                <td class="topCenterItem"><button id="exchange">⇄</button></td>
+                <td class="topItem"><h3 class="subtext" id="rightLang">日本語</h3></td>
+            </tr>
+            <tr>
+                <td class="text"><textarea id="leftArea" name="txtL" rows="15" cols="40" maxlength="2000" spellcheck="true"></textarea><br></td>
+                <td class="centerItem"><button id="translate">翻訳</button></td>
+                <td class="text"><textarea id="rightArea" name="txtR" rows="15" cols="40" maxlength="2000" placeholder="訳文" spellcheck="true" readonly></textarea><br></td>
+            </tr>
+            <tr>
+                <td class="bottomItem">
+                    <button id="arrange">整形</button><button id="newline">一文ごと改行</button><button id="punctuation">．，⇄。、</button>
+                </td>
+                <td class="bottomCenterItem"></td>
+                <td class="bottomItem"><button id="copy">クリップボードへコピー</button></td>
+            </tr>
+        </table>
+    </section>
+    <footer>©️ 2019 Takuto Nakamura</footer>
+    <p id="dummyArea"></p>
+    <script type="text/javascript" src="script.js"></script>
+</body>
+</html>
