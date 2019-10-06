@@ -12,7 +12,7 @@ body {
 section {
     width: 100%;
     height: auto;
-    min-height: calc(100% - 80px);
+    min-height: calc(100% - 54px);
 }
 
 h2.title {
@@ -134,9 +134,12 @@ p#dummyArea {
 }
 
 footer {
-    padding-top: 5px;
     width: 100%;
-    height: 45px;
-    color: #FFFFFF;
-    background-color: #37474F;
+    color: #37474F;
+}
+
+p.copyright {
+    margin: 0;
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
