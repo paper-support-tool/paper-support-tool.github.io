@@ -58,7 +58,7 @@ function copyRightArea() {
 function translate() {
   let url =
     "https://script.google.com/macros/s/AKfycbyNL-uaiRhUVUK3T5EHTDd2Q5fsfaMNaXJyheS_JGJLHuaBE57V/exec";
-  url += `&text=${encodeURIComponent(leftArea.value.replace(/\n/g, ""))}`;
+  url += `?text=${encodeURIComponent(leftArea.value.replace(/\n/g, ""))}`;
   if (language) {
     url += "&source=en&target=ja";
   } else {
@@ -77,7 +77,7 @@ function translate() {
       autoChangHeight();
     }
   };
-  xhr.open("GET", url, true);
+  xhr.open("GET", url);
   xhr.send();
 }
 
