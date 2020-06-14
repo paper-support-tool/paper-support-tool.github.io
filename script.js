@@ -65,7 +65,7 @@ function translate() {
     url += "&source=ja&target=en";
   }
   fetch(url)
-    .then((response) => response.json())
+    .then(async (response) => response.json())
     .then((json) => {
       let result = json.text;
       if (json.code == 200) {
