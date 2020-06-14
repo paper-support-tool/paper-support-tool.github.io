@@ -12,133 +12,192 @@ const dummyArea = document.getElementById("dummyArea");
 
 const defaultHeight = 250;
 const language_ = localStorage.getItem("language");
-let language = (language_ != null) ? JSON.parse(language_) : true;
+let language = language_ != null ? JSON.parse(language_) : true;
 let newlineFlag = false;
 let punctuation = false;
 let timer = 0;
 
 function dummyText(text) {
-    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/(\s) /g, "$1&nbsp").replace(/"/g, "&quot;").replace(/\n/g, "<br>") + "<br>";
+  return (
+    text
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/(\s) /g, "$1&nbsp")
+      .replace(/"/g, "&quot;")
+      .replace(/\n/g, "<br>") + "<br>"
+  );
 }
 
 function autoChangHeight() {
-    dummyArea.innerHTML = dummyText(rightArea.value);
-    const rightHeight = dummyArea.offsetHeight;
-    dummyArea.innerHTML = dummyText(leftArea.value);
-    const leftHeight = dummyArea.offsetHeight;
-    if (Math.max(leftHeight, rightHeight) > defaultHeight) {
-        if (leftHeight > rightHeight) {
-            leftArea.style.height = leftHeight + "px";
-            rightArea.style.height = leftHeight + "px";
-        } else {
-            leftArea.style.height = rightHeight + "px";
-            rightArea.style.height = rightHeight + "px";
-        }
+  dummyArea.innerHTML = dummyText(rightArea.value);
+  const rightHeight = dummyArea.offsetHeight;
+  dummyArea.innerHTML = dummyText(leftArea.value);
+  const leftHeight = dummyArea.offsetHeight;
+  if (Math.max(leftHeight, rightHeight) > defaultHeight) {
+    if (leftHeight > rightHeight) {
+      leftArea.style.height = leftHeight + "px";
+      rightArea.style.height = leftHeight + "px";
     } else {
-        leftArea.style.height = defaultHeight + "px";
-        rightArea.style.height = defaultHeight + "px";
+      leftArea.style.height = rightHeight + "px";
+      rightArea.style.height = rightHeight + "px";
     }
+  } else {
+    leftArea.style.height = defaultHeight + "px";
+    rightArea.style.height = defaultHeight + "px";
+  }
 }
 
 function copyRightArea() {
-    rightArea.selectionStart = 0;
-    rightArea.selectionEnd = rightArea.value.length;
-    rightArea.focus();
-    var result = document.execCommand("copy");
-    rightArea.blur();
+  rightArea.selectionStart = 0;
+  rightArea.selectionEnd = rightArea.value.length;
+  rightArea.focus();
+  var result = document.execCommand("copy");
+  rightArea.blur();
 }
 
 function translate() {
-    let url = "https://script.google.com/macros/s/AKfycbyNL-uaiRhUVUK3T5EHTDd2Q5fsfaMNaXJyheS_JGJLHuaBE57V/exec?callback=getTranslated"
-    url += "&text=" + encodeURIComponent(leftArea.value.replace(/\n/g, ""));
-    if (language) {
-        url += "&source=en&target=ja"
-    } else {
-        url += "&source=ja&target=en"
+  let url =
+    "https://script.google.com/macros/s/AKfycbyNL-uaiRhUVUK3T5EHTDd2Q5fsfaMNaXJyheS_JGJLHuaBE57V/exec";
+  url += `&text=${encodeURIComponent(leftArea.value.replace(/\n/g, ""))}`;
+  if (language) {
+    url += "&source=en&target=ja";
+  } else {
+    url += "&source=ja&target=en";
+  }
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      if (newlineFlag) {
+        rightArea.value = this.response
+          .replace(/(。|．)([^）」])/g, "$1\n$2")
+          .replace(/\. ([A-Z])/g, ". \n$1");
+      } else {
+        rightArea.value = this.response;
+      }
+      autoChangHeight();
     }
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            if (newlineFlag) {
-                rightArea.value = this.response.replace(/(。|．)([^）」])/g, "$1\n$2").replace(/\. ([A-Z])/g, ". \n$1");
-            } else {
-                rightArea.value = this.response;
-            }
-            autoChangHeight();
-        }
-    };
-    xhr.open('GET', url, true);
-    xhr.send();
+  };
+  xhr.open("GET", url, true);
+  xhr.send();
 }
 
-window.onload = function() {
-    if (!language) {
-        const tmp = leftLang.innerHTML;
-        leftLang.innerHTML = rightLang.innerHTML;
-        rightLang.innerHTML = tmp;
-    }
+window.onload = function () {
+  if (!language) {
+    const tmp = leftLang.innerHTML;
+    leftLang.innerHTML = rightLang.innerHTML;
+    rightLang.innerHTML = tmp;
+  }
 
-    exchangeBtn.addEventListener("click", function() {
-        language = !language;
-        localStorage.setItem("language",JSON.stringify(language));
-        const tmp = leftLang.innerHTML;
-        leftLang.innerHTML = rightLang.innerHTML;
-        rightLang.innerHTML = tmp;
-        console.log(rightArea.value.length);
-        if (rightArea.value.length > 0) {
-            leftArea.value = rightArea.value;
-        }
-    }, false);
+  exchangeBtn.addEventListener(
+    "click",
+    function () {
+      language = !language;
+      localStorage.setItem("language", JSON.stringify(language));
+      const tmp = leftLang.innerHTML;
+      leftLang.innerHTML = rightLang.innerHTML;
+      rightLang.innerHTML = tmp;
+      console.log(rightArea.value.length);
+      if (rightArea.value.length > 0) {
+        leftArea.value = rightArea.value;
+      }
+    },
+    false
+  );
 
-    translateBtn.addEventListener("click", function() {
-        console.log(leftArea.value.length);
-        if (leftArea.value.length < 10000) {
-            translate();
-        } else {
-            alert("翻訳する文字列が長過ぎます．");
-        }
-    }, false);
+  translateBtn.addEventListener(
+    "click",
+    function () {
+      console.log(leftArea.value.length);
+      if (leftArea.value.length < 10000) {
+        translate();
+      } else {
+        alert("翻訳する文字列が長過ぎます．");
+      }
+    },
+    false
+  );
 
-    arrangeBtn.addEventListener("click", function() {
-        newlineFlag = false;
-        if (language) {
-            leftArea.value = leftArea.value.replace(/(^\s+|-\s)/g, "").replace(/\n/g, " ").replace(/([\.\?!]) +/g, "$1 ").replace(/(\s)+/g, "$1");
-            leftArea.value = leftArea.value.replace(/(“|”)/g, "\"").replace(/’/g, "\'");
-        } else {
-            leftArea.value = leftArea.value.replace(/^(\s| )+/, "").replace(/\s+/g, "").replace(/\(/g, "（").replace(/\)/g, "）").replace(/\.([^a-zA-Z0-9]|$)/g, "．$1");
-        }
-        autoChangHeight();
-    }, false);
+  arrangeBtn.addEventListener(
+    "click",
+    function () {
+      newlineFlag = false;
+      if (language) {
+        leftArea.value = leftArea.value
+          .replace(/(^\s+|-\s)/g, "")
+          .replace(/\n/g, " ")
+          .replace(/([\.\?!]) +/g, "$1 ")
+          .replace(/(\s)+/g, "$1");
+        leftArea.value = leftArea.value
+          .replace(/(“|”)/g, '"')
+          .replace(/’/g, "'");
+      } else {
+        leftArea.value = leftArea.value
+          .replace(/^(\s| )+/, "")
+          .replace(/\s+/g, "")
+          .replace(/\(/g, "（")
+          .replace(/\)/g, "）")
+          .replace(/\.([^a-zA-Z0-9]|$)/g, "．$1");
+      }
+      autoChangHeight();
+    },
+    false
+  );
 
-    newlineBtn.addEventListener("click", function() {
-        newlineFlag = true;
-        if (language) {
-            leftArea.value = leftArea.value.replace(/([\.\?!]) ([A-Z\("'])/g, "$1 \n$2");
-        } else {
-            leftArea.value = leftArea.value.replace(/([．。？！])([^）」』])/g, "$1\n$2");
-        }
-        autoChangHeight();
-    }, false);
+  newlineBtn.addEventListener(
+    "click",
+    function () {
+      newlineFlag = true;
+      if (language) {
+        leftArea.value = leftArea.value.replace(
+          /([\.\?!]) ([A-Z\("'])/g,
+          "$1 \n$2"
+        );
+      } else {
+        leftArea.value = leftArea.value.replace(
+          /([．。？！])([^）」』])/g,
+          "$1\n$2"
+        );
+      }
+      autoChangHeight();
+    },
+    false
+  );
 
-    punctuationBtn.addEventListener("click", function() {
-        punctuation = !punctuation;
-        if (punctuation) {
-            leftArea.value = leftArea.value.replace(/．/g, "。").replace(/，/g, "、");
-        } else {
-            leftArea.value = leftArea.value.replace(/。/g, "．").replace(/、/g, "，");
-        }
-        autoChangHeight();
-    }, false);
+  punctuationBtn.addEventListener(
+    "click",
+    function () {
+      punctuation = !punctuation;
+      if (punctuation) {
+        leftArea.value = leftArea.value
+          .replace(/．/g, "。")
+          .replace(/，/g, "、");
+      } else {
+        leftArea.value = leftArea.value
+          .replace(/。/g, "．")
+          .replace(/、/g, "，");
+      }
+      autoChangHeight();
+    },
+    false
+  );
 
-    copyBtn.addEventListener("click", function() {
-        copyRightArea();
-    }, false);
+  copyBtn.addEventListener(
+    "click",
+    function () {
+      copyRightArea();
+    },
+    false
+  );
 
-    leftArea.addEventListener("input", function() {
-        autoChangHeight();
-    }, false);
-}
+  leftArea.addEventListener(
+    "input",
+    function () {
+      autoChangHeight();
+    },
+    false
+  );
+};
 
 window.onresize = function () {
-    autoChangHeight();
+  autoChangHeight();
 };
