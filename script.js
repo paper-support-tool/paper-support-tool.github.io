@@ -106,7 +106,6 @@ window.onload = function () {
   translateBtn.addEventListener(
     "click",
     function () {
-      console.log(leftArea.value.length);
       if (leftArea.value.length < 10000) {
         translate();
       } else {
