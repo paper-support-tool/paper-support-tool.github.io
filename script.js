@@ -51,34 +51,33 @@ function copyRightArea() {
   rightArea.selectionStart = 0;
   rightArea.selectionEnd = rightArea.value.length;
   rightArea.focus();
-  var result = document.execCommand("copy");
+  let result = document.execCommand("copy");
   rightArea.blur();
 }
 
 function translate() {
   let url =
-    "https://script.google.com/macros/s/AKfycbyNL-uaiRhUVUK3T5EHTDd2Q5fsfaMNaXJyheS_JGJLHuaBE57V/exec";
+    "https://script.google.com/macros/s/AKfycbxeorlk4gHwEmOz0K56-vgMf3BNQ9jx_Af8_EWAXjZSpyQYoqI/exec";
   url += `?text=${encodeURIComponent(leftArea.value.replace(/\n/g, ""))}`;
   if (language) {
     url += "&source=en&target=ja";
   } else {
     url += "&source=ja&target=en";
   }
-  var xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      if (newlineFlag) {
-        rightArea.value = this.response
-          .replace(/(。|．)([^）」])/g, "$1\n$2")
-          .replace(/\. ([A-Z])/g, ". \n$1");
-      } else {
-        rightArea.value = this.response;
+  fetch(url)
+    .then((response) => response.json())
+    .then((json) => {
+      let result = json.text;
+      if (json.code == 200) {
+        if (newlineFlag) {
+          result = result
+            .replace(/(。|．)([^）」])/g, "$1\n$2")
+            .replace(/\. ([A-Z])/g, ". \n$1");
+        }
       }
+      rightArea.value = result;
       autoChangHeight();
-    }
-  };
-  xhr.open("GET", url);
-  xhr.send();
+    });
 }
 
 window.onload = function () {
